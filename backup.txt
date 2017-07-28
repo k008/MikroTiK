@@ -4,6 +4,6 @@
 :local name [/system identity get name]
 :local version [/system resource get version]
 :local exportfile ("config_backup_verbose_" . $name . "_" . \
-"_" . $version . "_" . $year . $month . $day . ".rsc");
+$version . "_" . $day . $month . $year . ".rsc");
 :log info "Creating new Setup Script file...";
 /export verbose file=$exportfile;
