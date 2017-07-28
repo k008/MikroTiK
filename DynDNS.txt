@@ -1,0 +1,31 @@
+:global ddnsuser "User"
+:global ddnspass "Password"
+:global theinterface "ether1"
+:global ddnshost login.dyndns.org
+:global ipddns [:resolve $ddnshost];
+:global ipfresh [ /ip address get [/ip address find interface=$theinterface ] address ]
+:if ([ :typeof $ipfresh ] = nil ) do={
+   :log info ("DynDNS: No ip address on $theinterface .")
+} else={
+   :for i from=( [:len $ipfresh] - 1) to=0 do={ 
+      :if ( [:pick $ipfresh $i] = "/") do={ 
+    :set ipfresh [:pick $ipfresh 0 $i];
+      } 
+}
+ 
+:if ($ipddns != $ipfresh) do={
+    :log info ("DynDNS: IP-DynDNS = $ipddns")
+    :log info ("DynDNS: IP-Fresh = $ipfresh")
+   :log info "DynDNS: Update IP needed, Sending UPDATE...!"
+   :global str "/nic/update\?hostname=$ddnshost&myip=$ipfresh&wildcard=NOCHG&mx=NOCHG&backmx=NOCHG"
+   /tool fetch address=members.dyndns.org src-path=$str mode=http user=$ddnsuser \
+         password=$ddnspass dst-path=("/DynDNS.".$ddnshost)
+    :delay 1
+    :global str [/file find name="DynDNS.$ddnshost"];
+    /file remove $str
+    :global ipddns $ipfresh
+  :log info "DynDNS: IP updated to $ipfresh!"
+    } else={
+     :log info "DynDNS: dont need changes";
+    }
+} 
