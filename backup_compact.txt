@@ -1,0 +1,9 @@
+:local year [:pick [/system clock get date] 7 11]
+:local day [:pick [/system clock get date] 4 6]
+:local month [:pick [/system clock get date] 0 3]
+:local name [/system identity get name]
+:local version [/system resource get version]
+:local exportfile ("config_backup_" . $name . "_" . \
+"_" . $version . "_" . $day . $month . $year . ".rsc");
+:log info "Creating new Setup Script file...";
+/export file=$exportfile;
